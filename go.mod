@@ -1,4 +1,4 @@
-module github.com/Monibuca/plugin-hls
+module github.com/z184924/plugin-hls
 
 go 1.13
 
