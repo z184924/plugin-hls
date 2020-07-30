@@ -1,4 +1,4 @@
-module github.com/z184924/plugin-hls
+module github.com/z184924/plugin-hk-hls
 
 go 1.13
 
