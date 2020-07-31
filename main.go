@@ -19,6 +19,7 @@ import (
 	. "github.com/Monibuca/engine/v2/util"
 	. "github.com/Monibuca/plugin-ts"
 	"github.com/quangngotan95/go-m3u8/m3u8"
+	"github.com/robfig/cron"
 )
 
 var collection = sync.Map{}
@@ -90,6 +91,13 @@ func init() {
 			}
 		}
 	})
+	spec := "*/5 * * * * *"
+	i := 0
+	c := cron.New()
+	c.AddFunc(spec, func() {
+		log.Println("cron running:", i)
+	})
+	c.Start()
 }
 
 // HLS 发布者
@@ -241,4 +249,8 @@ func (p *HLS) Publish(streamName string) (result bool) {
 		}
 	}
 	return
+}
+
+func checkHik() {
+
 }
