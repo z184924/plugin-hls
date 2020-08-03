@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"context"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -54,6 +55,17 @@ func init() {
 			})
 			err = sse.WriteJSON(info)
 		}
+	})
+	http.HandleFunc("/hls/listJson", func(w http.ResponseWriter, r *http.Request) {
+		var info []*HLSInfo
+		collection.Range(func(key, value interface{}) bool {
+			info = append(info, &value.(*HLS).HLSInfo)
+			return true
+		})
+		header := w.Header()
+		header.Set("Content-Type", "application/json")
+		json, _ := json.Marshal(info)
+		w.Write([]byte(json))
 	})
 	http.HandleFunc("/hls/save", func(w http.ResponseWriter, r *http.Request) {
 		streamPath := r.URL.Query().Get("streamPath")
@@ -268,6 +280,7 @@ func checkHik() {
 		hikURL := HKM3U8URLF + deviceInfo[i].SysCode + HKM3U8URLB
 		log.Println(hikURL)
 		pull(hikURL, deviceInfo[i].SysCode)
+		time.Sleep(time.Duration(1) * time.Second)
 	}
 }
 func pull(hikURL string, publishPath string) {
