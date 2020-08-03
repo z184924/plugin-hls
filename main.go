@@ -91,11 +91,11 @@ func init() {
 			}
 		}
 	})
-	spec := "*/5 * * * * *"
-	i := 0
+	checkHik()
+	spec := "* */10 * * * *"
 	c := cron.New()
 	c.AddFunc(spec, func() {
-		log.Println("cron running:", i)
+		checkHik()
 	})
 	c.Start()
 }
@@ -252,5 +252,32 @@ func (p *HLS) Publish(streamName string) (result bool) {
 }
 
 func checkHik() {
-
+	// var info []*HLSInfo
+	// collection.Range(func(key, value interface{}) bool {
+	// 	info = append(info, &value.(*HLS).HLSInfo)
+	// 	return true
+	// })
+	// for i := 0; i < len(info); i++ {
+	// 	log.Println("hlsInfo:", *info[i])
+	// }
+	var deviceInfo []*DeviceInfo
+	deviceInfo = GetDeviceList()
+	// hikURL := HKM3U8URLF + deviceInfo[0].SysCode + HKM3U8URLB
+	// pull(hikURL, deviceInfo[0].SysCode)
+	for i := 0; i < len(deviceInfo); i++ {
+		hikURL := HKM3U8URLF + deviceInfo[i].SysCode + HKM3U8URLB
+		log.Println(hikURL)
+		pull(hikURL, deviceInfo[i].SysCode)
+	}
+}
+func pull(hikURL string, publishPath string) {
+	p := new(HLS)
+	var err error
+	p.Video.Req, err = http.NewRequest("GET", hikURL, nil)
+	if err == nil {
+		p.Publish(publishPath)
+		log.Println(publishPath)
+	} else {
+		log.Println(fmt.Sprintf(`"errmsg":"%s"`, err.Error()))
+	}
 }
