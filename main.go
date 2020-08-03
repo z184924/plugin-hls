@@ -64,6 +64,8 @@ func init() {
 		})
 		header := w.Header()
 		header.Set("Content-Type", "application/json")
+		header.Set("Access-Control-Allow-Origin", "*")
+		header.Set("Connection", "keep-alive")
 		json, _ := json.Marshal(info)
 		w.Write([]byte(json))
 	})
