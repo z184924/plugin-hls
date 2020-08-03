@@ -29,9 +29,9 @@ const BASEMETHOD string = "/webapi/service"
 const METHOD string = "/vss/getPlatCameraResListByUnits"
 
 //HKM3U8URLF 海康m3u8url前半段
-const HKM3U8URLF string = "http://172.16.104.2:6713/mag/hls/"
+// const HKM3U8URLF string = "http://172.16.104.2:6713/mag/hls/"
 
-// const HKM3U8URLF string = "http://111.30.79.44:6713/mag/hls/"
+const HKM3U8URLF string = "http://111.30.79.44:6713/mag/hls/"
 
 //HKM3U8URLB 海康m3u8url后半段
 const HKM3U8URLB string = "/1/live.m3u8"
