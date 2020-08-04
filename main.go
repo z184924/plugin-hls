@@ -307,7 +307,6 @@ func pull(hikURL string, publishPath string) {
 	p.Video.Req, err = http.NewRequest("GET", hikURL, nil)
 	if err == nil {
 		p.Publish(publishPath)
-		log.Println(publishPath)
 	} else {
 		log.Println(fmt.Sprintf(`"errmsg":"%s"`, err.Error()))
 	}
