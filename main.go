@@ -107,12 +107,18 @@ func init() {
 		}
 	})
 	checkHik()
-	spec := "0 */10 * * * ?"
-	c := cron.New()
-	c.AddFunc(spec, func() {
+	spec1 := "*/2 */10 * * * ?"
+	c1 := cron.New()
+	c1.AddFunc(spec1, func() {
 		checkHik()
 	})
-	c.Start()
+	c1.Start()
+	spec2 := "0 */10 * * * ?"
+	c2 := cron.New()
+	c2.AddFunc(spec2, func() {
+		delStopHLS()
+	})
+	c2.Start()
 }
 
 // HLS 发布者
@@ -267,7 +273,6 @@ func (p *HLS) Publish(streamName string) (result bool) {
 }
 
 func checkHik() {
-	delStopHLS()
 	var deviceInfo []*DeviceInfo
 	deviceInfo = GetDeviceList()
 	for i := 0; i < len(deviceInfo); i++ {
