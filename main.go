@@ -24,6 +24,7 @@ import (
 )
 
 var collection = sync.Map{}
+var pesCountMap = make(map[string]int)
 var config struct {
 	Fragment    int64
 	Window      int
@@ -106,7 +107,7 @@ func init() {
 		}
 	})
 	checkHik()
-	spec := "* */10 * * * *"
+	spec := "0 */10 * * * ?"
 	c := cron.New()
 	c.AddFunc(spec, func() {
 		checkHik()
@@ -266,23 +267,38 @@ func (p *HLS) Publish(streamName string) (result bool) {
 }
 
 func checkHik() {
-	// var info []*HLSInfo
-	// collection.Range(func(key, value interface{}) bool {
-	// 	info = append(info, &value.(*HLS).HLSInfo)
-	// 	return true
-	// })
-	// for i := 0; i < len(info); i++ {
-	// 	log.Println("hlsInfo:", *info[i])
-	// }
+	delStopHLS()
 	var deviceInfo []*DeviceInfo
 	deviceInfo = GetDeviceList()
-	// hikURL := HKM3U8URLF + deviceInfo[0].SysCode + HKM3U8URLB
-	// pull(hikURL, deviceInfo[0].SysCode)
 	for i := 0; i < len(deviceInfo); i++ {
 		hikURL := HKM3U8URLF + deviceInfo[i].SysCode + HKM3U8URLB
 		log.Println(hikURL)
 		pull(hikURL, deviceInfo[i].SysCode)
 		time.Sleep(time.Duration(1) * time.Second)
+	}
+}
+
+func delStopHLS() {
+	var info []*HLSInfo
+	collection.Range(func(key, value interface{}) bool {
+		info = append(info, &value.(*HLS).HLSInfo)
+		return true
+	})
+	for key, value := range pesCountMap {
+		log.Println("map:", key, value)
+	}
+	for i := 0; i < len(info); i++ {
+		hlsInfo := *info[i]
+		streamPath := hlsInfo.TSInfo.StreamInfo.StreamPath
+		totalPesCount := hlsInfo.TSInfo.TotalPesCount
+		oldTotalPesCount, ok := pesCountMap[streamPath]
+		if ok && totalPesCount == oldTotalPesCount {
+			log.Println("delete:", streamPath, ":", totalPesCount, "=", oldTotalPesCount)
+			collection.Delete(streamPath)
+			delete(pesCountMap, streamPath)
+		}
+		pesCountMap[streamPath] = totalPesCount
+		log.Println("pes:", streamPath, ":", totalPesCount)
 	}
 }
 func pull(hikURL string, publishPath string) {
