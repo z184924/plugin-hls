@@ -107,7 +107,7 @@ func init() {
 		}
 	})
 	checkHik()
-	spec1 := "*/2 */10 * * * ?"
+	spec1 := "* */10 * * * ?"
 	c1 := cron.New()
 	c1.AddFunc(spec1, func() {
 		checkHik()
@@ -161,7 +161,7 @@ func readM3U8(res *http.Response) (playlist *m3u8.Playlist, err error) {
 		playlist, err = m3u8.Read(reader)
 	}
 	if err != nil {
-		log.Printf("readM3U8 error:%s", err.Error())
+		// log.Printf("readM3U8 error:%s", err.Error())
 	}
 	return
 }
@@ -186,7 +186,7 @@ func (p *HLS) run(info *M3u8Info) {
 			//	return
 			//}
 			if playlist.Sequence <= sequence {
-				log.Printf("same sequence:%d,max:%d", playlist.Sequence, sequence)
+				// log.Printf("same sequence:%d,max:%d", playlist.Sequence, sequence)
 				time.Sleep(time.Second)
 				continue
 			}
@@ -236,17 +236,17 @@ func (p *HLS) run(info *M3u8Info) {
 							p.PesCount = tsCost.BufferLength - beginLen
 						}
 					} else if err != nil {
-						log.Printf("%s readTs:%v", p.StreamPath, err)
+						// log.Printf("%s readTs:%v", p.StreamPath, err)
 					}
 				} else if err != nil {
-					log.Printf("%s reqTs:%v", p.StreamPath, err)
+					// log.Printf("%s reqTs:%v", p.StreamPath, err)
 				}
 				info.M3u8Info = append(info.M3u8Info, tsCost)
 			}
 
 			time.Sleep(time.Second * time.Duration(playlist.Target) * 2)
 		} else {
-			log.Printf("%s readM3u8:%v", p.StreamPath, err)
+			// log.Printf("%s readM3u8:%v", p.StreamPath, err)
 			errcount++
 			if errcount > 10 {
 				return
@@ -289,9 +289,9 @@ func delStopHLS() {
 		info = append(info, &value.(*HLS).HLSInfo)
 		return true
 	})
-	for key, value := range pesCountMap {
-		log.Println("map:", key, value)
-	}
+	// for key, value := range pesCountMap {
+	// 	log.Println("map:", key, value)
+	// }
 	for i := 0; i < len(info); i++ {
 		hlsInfo := *info[i]
 		streamPath := hlsInfo.TSInfo.StreamInfo.StreamPath
@@ -303,7 +303,7 @@ func delStopHLS() {
 			delete(pesCountMap, streamPath)
 		}
 		pesCountMap[streamPath] = totalPesCount
-		log.Println("pes:", streamPath, ":", totalPesCount)
+		// log.Println("pes:", streamPath, ":", totalPesCount)
 	}
 }
 func pull(hikURL string, publishPath string) {
